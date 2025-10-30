@@ -18,7 +18,7 @@ public class ServerApplication {
     public static void main(String[] args) {
         try (InputStream serviceAccount = ServerApplication.class
                 .getClassLoader()
-                .getResourceAsStream("task-tracker-50f68-firebase-adminsdk-fbsvc-fe31d5ebc7.json")) {
+                .getResourceAsStream("task-tracker-50f68-firebase-adminsdk-fbsvc-f7708b2fa7.json")) {
 
             if (serviceAccount == null) {
                 throw new RuntimeException("❌ Firebase config file not found in resources folder");

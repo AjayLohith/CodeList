@@ -32,8 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-server/src/main/resources/task-tracker-50f68-firebase-adminsdk-fbsvc-fe31d5ebc7.json
-
 .env
+src/main/resources/task-tracker-50f68-firebase-adminsdk-fbsvc-f7708b2fa7.json
+
 # Firebase credentials
 *.json
