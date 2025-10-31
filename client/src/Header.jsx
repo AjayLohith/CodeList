@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 
-export default function Header({ user, onLogin, onLogout }) {
+export default function Header({ user, onLogin, onLogout, onToggleSidebar }) {
     const [open, setOpen] = useState(false);
     const menuRef = useRef();
 
@@ -16,26 +16,48 @@ export default function Header({ user, onLogin, onLogout }) {
 
     return (
         <header>
-            <h1>
-                Code<span>List</span>
-            </h1>
+            {/* Left: Sidebar Toggle (visible only on mobile) */}
+            <button className="sidebar-toggle" onClick={onToggleSidebar} aria-label="Toggle Sidebar">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="#111"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
 
+            {/* Center: Title */}
+            <div className="header-title">
+                <h1>
+                    Code<span>List</span>
+                </h1>
+            </div>
+
+            {/* Right: Profile / Sign-in */}
             <div className="right" ref={menuRef}>
                 {user ? (
                     <div className="profile-container">
-                        <div
-                            className="profile-info"
-                            onClick={() => setOpen(!open)}
-                        >
+                        <div className="profile-info" onClick={() => setOpen(!open)}>
                             <div className="profile-icon">
                                 {user.name?.charAt(0).toUpperCase() || "👤"}
                             </div>
-                            <span className="profile-name-header">{user.name?.split(" ")[0]}</span>
+                            <span className="profile-name-header">
+                                {user.name?.split(" ").slice(0, 1).join(" ")}
+                            </span>
                         </div>
 
                         {open && (
                             <div className="dropdown-menu">
-                                <p className="profile-name">{user.name}</p>
+                                <p className="profile-name">{user.name?.split(" ").slice(0, 2).join(" ")}</p>
                                 {user.email && (
                                     <p
                                         style={{

@@ -37,7 +37,7 @@ header h1 {
     margin: 0;
     white-space: nowrap;
     margin-right: 1rem;
-    padding-left: 15px;
+    padding-left: 20px;
 }
 
 header h1 span {
@@ -79,9 +79,10 @@ header .right {
 
 .profile-name-header {
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     margin-top: 0.2rem;
     padding-left: 5px;
+    padding-right: 9px;
 }
 
 /* ===== Dropdown Menu ===== */
@@ -132,6 +133,7 @@ header .right {
     border: 4px solid #111;
     box-shadow: 8px 8px 0 #111;
     padding: 1.5rem;
+
     border-radius: 20px;
     display: flex;
     flex-direction: column;
@@ -174,6 +176,7 @@ header .right {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
+
 }
 
 .task-form input,
@@ -221,6 +224,7 @@ header .right {
     box-shadow: 6px 6px 0 #111;
     border-radius: 15px;
     padding: 1rem;
+
     display: flex;
     justify-content: space-between;
     align-items: stretch;
@@ -331,7 +335,7 @@ header .right {
     }
 
     .profile-name-header {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         padding-left: 4px;
         padding-right: 1px;
     }
@@ -364,6 +368,7 @@ header .right {
 
     body {
         font-size: 0.95rem;
+        padding: 10px;
     }
 }
 
@@ -387,3 +392,348 @@ header .right {
         margin: 5.5rem 0.8rem 1.5rem 0.8rem;
     }
 }
+
+/* ===== Right Sidebar ===== */
+.right-sidebar {
+    position: fixed;
+    top: 6rem;
+    right: 1rem;
+    width: 240px;
+    background: #fff;
+    border: 4px solid #111;
+    box-shadow: 6px 6px 0 #111;
+    border-radius: 15px;
+    padding: 1rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-title {
+    font-weight: 800;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.label-group {
+    border: 3px solid #111;
+    border-radius: 10px;
+    margin-bottom: 0.8rem;
+    background: #f9f9f9;
+    box-shadow: 3px 3px 0 #111;
+}
+
+.label-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: #ffd600;
+    border-bottom: 3px solid #111;
+    border-radius: 8px 8px 0 0;
+}
+
+.label-tasks {
+    padding: 0.6rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.sidebar-task {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.sidebar-task input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.sidebar-task .done {
+    text-decoration: line-through;
+    color: #555;
+}
+
+/* ===== Sidebar Toggle (Header Button) ===== */
+.sidebar-toggle {
+    display: none;
+    font-size: 1.5rem;
+    font-weight: 900;
+    border: 3px solid #111;
+    background: #ffd600;
+    padding: 0.3rem 0.6rem;
+
+    border-radius: 8px;
+    box-shadow: 3px 3px 0 #111;
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+.sidebar-toggle:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #111;
+}
+
+/* ===== Responsive Sidebar ===== */
+@media (max-width: 1024px) {
+    .right-sidebar {
+        transform: translateX(120%);
+    }
+    .right-sidebar.visible {
+        transform: translateX(0);
+    }
+    .sidebar-toggle {
+        display: block;
+
+    }
+}
+/* ===== RESPONSIVE LAYOUT FOR TASK FORM + SIDEBAR ===== */
+
+/* Desktop: Two-column layout */
+@media (min-width: 1025px) {
+    .app-layout {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        align-items: flex-start;
+        padding-right: 270px; /* space for fixed sidebar */
+    }
+
+    .panel {
+        width: 600px;
+        margin-right: auto;
+        transition: width 0.3s ease;
+    }
+
+    .right-sidebar {
+        position: fixed;
+        top: 6rem;
+        right: 2rem;
+        width: 260px;
+    }
+}
+
+/* Tablet: Sidebar moves closer, TaskForm shrinks slightly */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .app-layout {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+
+    .panel {
+        width: 55%;
+        margin-right: 0;
+    }
+
+    .right-sidebar {
+        position: relative;
+        width: 35%;
+        top: 0;
+        right: 0;
+        margin-top: 6rem;
+    }
+}
+
+/* Mobile: Sidebar hidden and toggleable */
+@media (max-width: 768px) {
+    .app-layout {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .panel {
+        width: 100%;
+        margin: 6rem auto 1rem auto;
+        padding: 1rem;
+    }
+
+    .right-sidebar {
+        position: fixed;
+        top: 5rem;
+        right: 0;
+        width: 80%;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 999;
+    }
+
+    .right-sidebar.visible {
+        transform: translateX(0);
+    }
+
+    .sidebar-toggle {
+        display: inline-flex;
+        margin-left: 1rem;
+        order: 2;
+    }
+
+    header .right {
+        flex-direction: row-reverse;
+    }
+
+    .profile-container {
+        order: 1;
+    }
+}
+
+/* ===== MOBILE TASK FORM REFINEMENT ===== */
+@media (max-width: 768px) {
+    .panel {
+        width: 92%;
+        margin: 6rem auto 1.5rem auto;
+        padding: 0.8rem;
+        border-width: 3px;
+        box-shadow: 5px 5px 0 #111;
+    }
+
+    .task-form input,
+    .task-form textarea {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.7rem;
+        border-width: 2.5px;
+        border-radius: 8px;
+    }
+
+    .add-full {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+        border-width: 3px;
+        box-shadow: 3px 3px 0 #111;
+    }
+}
+
+@media (max-width: 480px) {
+    .panel {
+        width: 90%;
+        margin: 5.5rem auto 1.2rem auto;
+        padding: 0.7rem;
+    }
+}
+/* ===== Responsive Navbar Layout (Mobile) ===== */
+@media (max-width: 768px) {
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 1rem;
+    }
+
+    .header-title {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+
+    .header-title h1 {
+        font-size: 1.4rem;
+        margin: 0;
+    }
+
+    .sidebar-toggle {
+        order: 1;
+        margin-right: auto;
+    }
+
+    .right {
+        order: 3;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+    }
+
+    .profile-container {
+        flex-direction: row;
+        gap: 0.3rem;
+    }
+
+    .profile-icon {
+        padding: 0.35rem 0.55rem;
+        font-size: 0.85rem;
+    }
+
+    .profile-name-header {
+        display: none; /* hides name in mobile, keeps icon */
+    }
+}
+
+
+/* ===== Smooth Transition Between Desktop & Tablet (1200px → 769px) ===== */
+@media (max-width: 1200px) and (min-width: 769px) {
+    .app-layout {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 1.5rem; /* keeps a clear gap between sidebar and form */
+        padding: 0 1rem;
+    }
+
+    .panel {
+        flex: 0 1 60%;
+        max-width: 620px;
+        margin-right: 0;
+        transition: all 0.3s ease;
+    }
+
+    .right-sidebar {
+        flex: 0 1 30%;
+        max-width: 340px;
+        position: relative;
+        top: 0;
+        right: 0;
+        margin-top: 6rem;
+        transition: all 0.3s ease;
+    }
+}
+
+/* ===== Tablet Specific (≤ 1024px) refined ===== */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .app-layout {
+        gap: 1.2rem;
+    }
+
+    .panel {
+        flex: 0 1 58%;
+        max-width: 540px;
+    }
+
+    .right-sidebar {
+        flex: 0 1 38%;
+        max-width: 310px;
+        margin-top: 6rem;
+    }
+}
+
+/* ===== Center Adjustment for Task Form ===== */
+
+/* Desktop & Tablet - Slight right shift for better centering */
+@media (min-width: 769px) {
+    .panel {
+        margin-right: -8rem; /* slight nudge to center visually */
+    }
+
+    /* On very wide screens, reduce the nudge */
+    @media (min-width: 1400px) {
+        .panel {
+            margin-left: 1.5rem;
+        }
+    }
+}
+
+/* Mobile - keep naturally centered */
+@media (max-width: 768px) {
+    .panel {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+

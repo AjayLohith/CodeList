@@ -9,6 +9,7 @@ import java.util.List;
 
 @Service
 public class TaskService {
+
     @Autowired
     private TaskRepository repo;
 
@@ -23,32 +24,27 @@ public class TaskService {
 
     public void deleteTask(String userId, String taskId) {
         Task task = repo.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
+                .orElseThrow(() -> new RuntimeException("Task not found: " + taskId));
 
-        // safer null check
-        if (task.getUserId() == null || !task.getUserId().equals(userId)) {
-            throw new SecurityException("Unauthorized to delete this task");
+        if (!userId.equals(task.getUserId())) {
+            throw new SecurityException("Unauthorized deletion");
         }
-        System.out.println("deleteTask called: userId=" + userId + " taskId=" + taskId);
-        System.out.println("existing task userId=" + task.getUserId());
 
         repo.deleteById(taskId);
     }
 
     public Task updateTask(String userId, Task task) {
         Task existing = repo.findById(task.getId())
-                .orElseThrow(() -> new RuntimeException("Task not found with id: " + task.getId()));
+                .orElseThrow(() -> new RuntimeException("Task not found: " + task.getId()));
 
-        if (existing.getUserId() == null || !existing.getUserId().equals(userId)) {
-            throw new SecurityException("Unauthorized to modify this task");
+        if (!userId.equals(existing.getUserId())) {
+            throw new SecurityException("Unauthorized update");
         }
 
-        // copy only allowed fields (do NOT overwrite userId)
         if (task.getTitle() != null) existing.setTitle(task.getTitle());
-        existing.setCompleted(task.isCompleted());
         if (task.getDescription() != null) existing.setDescription(task.getDescription());
-        // preserve existing.createdAt, existing.userId etc.
-        System.out.println("updateTask called: userId=" + userId + " task=" + task.getId());
+        if (task.getLabel() != null) existing.setLabel(task.getLabel());
+        existing.setCompleted(task.isCompleted());
 
         return repo.save(existing);
     }

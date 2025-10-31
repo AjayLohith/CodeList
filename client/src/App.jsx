@@ -1,103 +1,206 @@
-import React, { useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-import { auth } from "./firebase";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
-import TaskList from "./TaskList";
 import TaskForm from "./TaskForm";
-import "./index.css";
+import TaskList from "./TaskList";
+import RightSidebar from "./RightSidebar";
+import { auth, provider } from "./firebase";
+import { signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
 
-async function apiFetch(endpoint, method = "GET", token = null, body = null) {
-    const headers = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-    const resp = await fetch(`${API_BASE}${endpoint}`, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : undefined,
-    });
-    if (method === "DELETE") return {};
-    if (!resp.ok) throw new Error(await resp.text());
-    return resp.json();
-}
-
 export default function App() {
-    const [tasks, setTasks] = useState([]);
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(null);
+    const [tasks, setTasks] = useState([]);
+    const [showSidebar, setShowSidebar] = useState(false);
+    const [loading, setLoading] = useState(false);
 
+    // ✅ Firebase Auth Listener
     useEffect(() => {
-        const unsub = onAuthStateChanged(auth, async (u) => {
-            if (u) {
-                const t = await u.getIdToken();
-                const firstName = u.displayName ? u.displayName.split(" ")[0] : "User";
-                setUser({ name: firstName, email: u.email });
-                setToken(t);
-                loadTasks(t);
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            if (currentUser) {
+                setUser({
+                    name: currentUser.displayName,
+                    email: currentUser.email,
+                    uid: currentUser.uid,
+                });
+                fetchTasks(currentUser);
             } else {
                 setUser(null);
-                setToken(null);
                 setTasks([]);
             }
         });
-        return () => unsub();
+        return () => unsubscribe();
     }, []);
 
-    async function loadTasks(tkn) {
+    // ✅ Login with Google
+    const handleLogin = async () => {
         try {
-            const data = await apiFetch("/api/tasks", "GET", tkn);
-            setTasks(data);
-        } catch (e) {
-            console.error("Error loading tasks:", e);
+            await signInWithPopup(auth, provider);
+        } catch (error) {
+            console.error("Login failed:", error);
+        }
+    };
+
+    // ✅ Logout
+    const handleLogout = async () => {
+        await signOut(auth);
+        setUser(null);
+        setTasks([]);
+    };
+
+    // 🔐 Helper for authorized fetch
+    async function fetchWithAuth(url, options = {}) {
+        const user = auth.currentUser;
+        const token = user ? await user.getIdToken() : null;
+        const headers = {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+        };
+
+        const res = await fetch(url, { ...options, headers });
+
+        if (options.method === "DELETE") {
+            if (!res.ok && res.status !== 204) {
+                const msg = await res.text();
+                throw new Error(`Request failed: ${res.status} - ${msg}`);
+            }
+            return {};
+        }
+
+        if (!res.ok) {
+            const msg = await res.text();
+            throw new Error(`Request failed: ${res.status} - ${msg}`);
+        }
+
+        return res.json();
+    }
+
+    // ✅ Fetch tasks
+    async function fetchTasks(currentUser) {
+        try {
+            setLoading(true);
+            const token = await currentUser.getIdToken();
+            const res = await fetch(`${API_BASE}/api/tasks`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!res.ok) throw new Error("Failed to fetch tasks");
+            const data = await res.json();
+
+            const normalized = data.map((t) => ({
+                ...t,
+                id: t.id || t._id,
+            }));
+            setTasks(normalized);
+        } catch (err) {
+            console.error("Error fetching tasks:", err);
+        } finally {
+            setLoading(false);
         }
     }
 
-    async function addTask(payload) {
-        if (!token) return;
-        const created = await apiFetch("/api/tasks", "POST", token, payload);
-        setTasks((prev) => [created, ...prev]);
-    }
+    // ✅ Add new task
+    const addTask = async (newTask) => {
+        try {
+            const saved = await fetchWithAuth(`${API_BASE}/api/tasks`, {
+                method: "POST",
+                body: JSON.stringify(newTask),
+            });
+            setTasks((prev) => [...prev, saved]);
+        } catch (err) {
+            console.error("Error adding task:", err);
+        }
+    };
 
-    async function toggleTask(task) {
-        const updated = { ...task, completed: !task.completed };
-        const res = await apiFetch(`/api/tasks/${task.id}`, "PUT", token, updated);
-        setTasks((prev) => prev.map((t) => (t.id === res.id ? res : t)));
-    }
+    // ✅ Toggle completion
+    const toggleTask = async (taskToToggle) => {
+        try {
+            const updated = await fetchWithAuth(`${API_BASE}/api/tasks/${taskToToggle.id}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                    ...taskToToggle,
+                    completed: !taskToToggle.completed,
+                }),
+            });
 
-    async function removeTask(task) {
-        await apiFetch(`/api/tasks/${task.id}`, "DELETE", token);
-        setTasks((prev) => prev.filter((t) => t.id !== task.id));
-    }
+            setTasks((prev) =>
+                prev.map((t) => (t.id === updated.id ? updated : t))
+            );
+        } catch (err) {
+            console.error("Error updating task:", err);
+        }
+    };
 
-    async function handleLogin() {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-    }
+    // ✅ Delete task
+    const deleteTask = async (taskToDelete) => {
+        try {
+            await fetchWithAuth(`${API_BASE}/api/tasks/${taskToDelete.id}`, {
+                method: "DELETE",
+            });
+            setTasks((prev) => prev.filter((t) => t.id !== taskToDelete.id));
+        } catch (err) {
+            console.error("❌ Error deleting task:", err);
+        }
+    };
 
-    async function handleLogout() {
-        await signOut(auth);
-    }
+    const toggleSidebar = () => setShowSidebar((prev) => !prev);
 
     return (
-        <div>
-            <Header user={user} onLogin={handleLogin} onLogout={handleLogout} />
-            <div className="panel">
-                {user ? (
-                    <>
-                        <TaskForm onAdd={addTask} disabled={!token} />
-                        <TaskList tasks={tasks} onToggle={toggleTask} onDelete={removeTask} />
-                    </>
-                ) : (
-                    <div className="login-message">
-                        <h2>👨‍💻 No User  found.</h2>
-                        <p>
-                            Initialize your session with <strong>GoogleAuth()</strong> to start tracking your daily commits.
-                            Let’s refactor your productivity code together! ⚡
-                        </p>
-                        <button className="login-btn" onClick={handleLogin}>Authenticate with Google</button>
+        <div className={`app-container ${showSidebar ? "sidebar-active" : ""}`}>
+            {/* Header */}
+            <Header
+                user={user}
+                onLogin={handleLogin}
+                onLogout={handleLogout}
+                onToggleSidebar={toggleSidebar}
+            />
+
+            {/* Main Layout */}
+            <main className="main-content">
+                <div className="app-layout">
+                    <div className="panel">
+                        {user ? (
+                            <>
+                                <TaskForm onAdd={addTask} disabled={!user} />
+                                {loading ? (
+                                    <p>Loading tasks...</p>
+                                ) : (
+                                    <TaskList
+                                        tasks={tasks}
+                                        onToggle={toggleTask}
+                                        onDelete={deleteTask}
+                                    />
+                                )}
+                            </>
+                        ) : (
+                            <div className="login-message-container">
+                                <div className="login-message">
+                                    <h2>👨‍💻 No User Found</h2>
+                                    <p>
+                                        Initialize your session with <strong>GoogleAuth()</strong> to
+                                        start tracking your daily commits and tasks. Let’s refactor your
+                                        productivity code together! ⚡
+                                    </p>
+                                    <button className="login-btn" onClick={handleLogin}>
+                                        Authenticate with Google
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
+
+                    {/* Sidebar */}
+                    {user && (
+                        <RightSidebar
+                            tasks={tasks}
+                            onToggle={toggleTask}
+                            showSidebar={showSidebar}
+                        />
+                    )}
+                </div>
+            </main>
         </div>
     );
 }

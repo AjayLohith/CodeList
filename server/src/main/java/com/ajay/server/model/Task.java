@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Task {
 
     @Id
-    private String id;  // <-- Important: use String, not ObjectId
+    private String id;
 
     private String userId;
     private String title;
@@ -15,6 +15,21 @@ public class Task {
     private boolean completed;
     private String createdAt;
 
+    // ✅ NEW FIELD
+    private String label; // e.g., "Work", "Personal"
+
+    public Task() {}
+
+    public Task(String userId, String title, String description, boolean completed, String createdAt, String label) {
+        this.userId = userId;
+        this.title = title;
+        this.description = description;
+        this.completed = completed;
+        this.createdAt = createdAt;
+        this.label = label;
+    }
+
+    // === Getters and Setters ===
     public String getId() {
         return id;
     }
@@ -61,5 +76,14 @@ public class Task {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    // ✅ Label support
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }
