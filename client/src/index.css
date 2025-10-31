@@ -111,10 +111,17 @@ header .right {
     background: #ff1744;
     color: white;
     border: 3px solid #111;
-    padding: 0.4rem 0.8rem;
     font-weight: 700;
+    padding: 0.4rem 1rem;
+    box-shadow: 4px 4px 0 #111;
     border-radius: 8px;
+    margin-top: 1rem;
     cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #111;
 }
 
 /* ===== Main Panel ===== */
@@ -130,6 +137,8 @@ header .right {
     flex-direction: column;
     gap: 1.5rem;
 }
+
+
 
 /* ===== Login Message ===== */
 .login-message {
