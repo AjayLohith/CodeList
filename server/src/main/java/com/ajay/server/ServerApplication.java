@@ -9,38 +9,59 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 @SpringBootApplication
 @RestController
 public class ServerApplication {
 
-    public static void main(String[] args) {
-        try (InputStream serviceAccount = ServerApplication.class
-                .getClassLoader()
-                .getResourceAsStream("task-tracker-50f68-firebase-adminsdk-fbsvc-f7708b2fa7.json")) {
+    @GetMapping("/")
+    public String home() {
+        return "✅ Server is running with Firebase + MongoDB!";
+    }
 
-            if (serviceAccount == null) {
-                throw new RuntimeException("❌ Firebase config file not found in resources folder");
-            }
+    public static void main(String[] args) {
+        // ✅ Load .env file manually
+        Dotenv dotenv = Dotenv.configure()
+                .directory("D:/TaskTracker/server") // full path to your .env file
+                .ignoreIfMissing()
+                .load();
+
+        String mongoUri = dotenv.get("MONGODB_URI");
+        String firebaseConfig = dotenv.get("FIREBASE_CONFIG");
+
+        if (mongoUri == null || mongoUri.isEmpty()) {
+            throw new RuntimeException("❌ MONGODB_URI environment variable not set");
+        }
+        System.setProperty("MONGODB_URI", mongoUri);
+
+        if (firebaseConfig == null || firebaseConfig.isEmpty()) {
+            throw new RuntimeException("❌ FIREBASE_CONFIG environment variable not set");
+        }
+
+        try {
+            // ✅ Convert FIREBASE_CONFIG string to InputStream
+            ByteArrayInputStream serviceAccount = new ByteArrayInputStream(firebaseConfig.getBytes(StandardCharsets.UTF_8));
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
 
-            FirebaseApp.initializeApp(options);
-            System.out.println("✅ Firebase initialized successfully!");
+            if (FirebaseApp.getApps().isEmpty()) {
+                FirebaseApp.initializeApp(options);
+                System.out.println("✅ Firebase initialized successfully!");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("❌ Failed to initialize Firebase: " + e.getMessage());
         }
-        // Load .env file
-        Dotenv dotenv = Dotenv.load();
-        System.setProperty("MONGODB_URI", dotenv.get("MONGODB_URI"));
 
+        // ✅ Debug info
+        System.out.println("🔍 MONGODB_URI loaded: " + mongoUri.substring(0, Math.min(50, mongoUri.length())) + "...");
+        System.out.println("✅ Environment variables loaded successfully!");
+
+        // ✅ Start Spring Boot
         SpringApplication.run(ServerApplication.class, args);
-
-
-
     }
-
 }
