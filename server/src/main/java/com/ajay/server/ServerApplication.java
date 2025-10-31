@@ -6,8 +6,12 @@ import com.google.firebase.FirebaseOptions;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.context.annotation.Bean;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +20,26 @@ import java.nio.charset.StandardCharsets;
 @RestController
 public class ServerApplication {
 
+    // ✅ Add global CORS configuration
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins(
+                                "http://localhost:5173/",                 // local dev
+                                "https://code-list-omega.vercel.app",    // your deployed frontend
+                                "https://codelist-2.onrender.com"        // your backend domain (optional)
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+            }
+        };
+    }
+
+    @CrossOrigin // ✅ Also allow direct browser access to this endpoint
     @GetMapping("/")
     public String home() {
         return "✅ Server is running with Firebase + MongoDB!";
