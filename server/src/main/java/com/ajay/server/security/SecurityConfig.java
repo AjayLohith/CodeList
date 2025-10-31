@@ -30,6 +30,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
+                "http://localhost:8080",
                 "https://code-list-omega.vercel.app",
                 "https://codelist-2.onrender.com"
         ));
