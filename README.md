@@ -1,86 +1,83 @@
-# 🧩 CodeList — Task Tracker (Spring Boot + MongoDB + Firebase Auth)
+# 🗂️ TaskTracker
 
-A simple, user-specific **Task Tracker (To-Do)** web application.  
-Users sign in with **Firebase Authentication**, and each user manages their own tasks stored securely in **MongoDB**.  
-The backend is built using **Spring Boot**, and the frontend is powered by **React**.  
-
-**🌐 Live Demo:** [https://code-list-omega.vercel.app](https://code-list-omega.vercel.app)
+**TaskTracker** is a simple yet secure task management application built using **Spring Boot**, **MongoDB**, and **Firebase Authentication**.  
+Each user can manage their own tasks — add, update, or delete them — all while keeping data private and safely stored in the database.
 
 ---
 
-## 🧾 One-line Summary
-Full-stack task manager using **Firebase Auth** for authentication, **Spring Boot + MongoDB** for backend, and **React** for frontend.
+## ✨ Features
+
+- 🔐 **User Authentication:** Secure login and signup using Firebase Authentication.  
+- 🧾 **Personalized Tasks:** Every user can create and manage their own tasks independently.  
+- 🕓 **CRUD Operations:** Add, edit, delete, and mark tasks as completed.  
+- 📆 **Timestamps:** Automatically tracks when tasks are created and updated.  
+- 💾 **MongoDB Integration:** All tasks are stored in a NoSQL database for fast access.  
+- 🧱 **Modular Structure:** Clean separation between Controller, Service, and Repository layers.  
 
 ---
 
-## ⚙️ Tech Stack (Summary)
+## 🧰 Technologies Used
 
-- **Frontend:** React (client app), Firebase Web SDK (auth + token), optional tooling (Vite / Create React App)  
-- **Backend:** Spring Boot (Java 17+), Firebase Admin SDK (token verification), Spring Security (filter integration)  
-- **Database:** MongoDB (Atlas or local)  
-- **Build / Package:** Maven (backend), npm / yarn (frontend)  
-- **Hosting / Deployment:** Vercel (frontend), Render (backend)
-
----
-
-## 🚀 Deployment
-
-- **Frontend:** Deployed on **Vercel** → [https://code-list-omega.vercel.app](https://code-list-omega.vercel.app)  
-- **Backend:** Hosted on **Render** → connected directly from GitHub for continuous deployment  
-- **Environment Variables:**  
-  - Firebase Config  
-  - MongoDB URI  
-  - Render Backend URL  
-  *(all set as environment secrets on respective platforms)*
+- **Backend:** Spring Boot  
+- **Database:** MongoDB (Spring Data MongoDB)  
+- **Authentication:** Firebase Authentication (JWT validation)  
+- **Build Tool:** Maven  
+- **Testing:** Postman  
+- **Deployment (Optional):** Render / Railway  
 
 ---
 
-## 🧱 Backend — Main Dependencies (Maven)
+## 🚀 Getting Started
 
-- `org.springframework.boot:spring-boot-starter-web`  
-- `org.springframework.boot:spring-boot-starter-data-mongodb`  
-- `org.springframework.boot:spring-boot-starter-security`  
-- `com.google.firebase:firebase-admin` *(Firebase Admin SDK)*  
-- `org.projectlombok:lombok` *(optional)*  
-- `org.springframework.boot:spring-boot-starter-test` *(test scope)*  
+Follow these simple steps to set up TaskTracker locally.
 
----
+### Prerequisites
 
-## 💻 Frontend — Main Dependencies (npm)
-
-- `react`  
-- `react-dom`  
-- `firebase` *(Firebase Web SDK)*  
-- `axios` or `fetch` *(HTTP client)*  
-- **Optional:** `react-router-dom`, `zustand` / `redux` *(state management)*, `tailwindcss` or `sass` *(styling)*, `vite` or `create-react-app` *(dev tooling)*  
+- Java 17 or higher installed  
+- Maven installed  
+- MongoDB Atlas or local MongoDB instance  
+- Firebase project setup for authentication  
 
 ---
 
+### 🏗️ Installation & Setup
 
+#### Clone the Repository
 
-## ✨ Key Features
+```bash
+git clone https://github.com/your-username/tasktracker.git
+cd tasktracker
+```
 
-- 🔐 **Firebase Email/Password Authentication** using secure JWT tokens  
-- 🧍 **Per-user Task Isolation** (each task tied to Firebase UID)  
-- 📦 **CRUD Operations** — create, read, update, delete tasks  
-- ☁️ **MongoDB Persistence** — works with Atlas or local instance  
-- ✅ **Token Verification** via Firebase Admin SDK on backend  
+#### Add Configuration
+
+Create a file named `application.properties` inside `src/main/resources/`
+
+```
+spring.data.mongodb.uri=<Your_MongoDB_URI>
+firebase.auth.url=<Your_Firebase_Project_URL>
+```
+
+Place your Firebase service account key JSON inside the project directory (e.g., `/config/firebase-key.json`).
+
+#### Install Dependencies
+
+```bash
+mvn clean install
+```
+
+#### Run the Application
+
+```bash
+mvn spring-boot:run
+```
 
 ---
 
-## 🔒 Security & Best Practices
+## 🧪 Testing the Application
 
-- Firebase Admin SDK validates all incoming ID tokens on backend  
-- Spring Security integrates a custom authentication filter  
-- Each task is authorized by matching `task.userId` with the authenticated Firebase UID  
-- Sensitive credentials (Firebase JSON key, MongoDB URI, API keys) are stored securely as environment variables — **never committed to Git**  
+- Use **Postman** to test each endpoint.  
+- Make sure to include your Firebase **Bearer token** in the Authorization header when sending requests.  
+- Each authenticated user can only access their own tasks.  
 
 ---
-
-## 🚧 Future Improvements
-
-- ⏰ Add due dates and reminders  
-- 🔔 Push notifications via Firebase Cloud Messaging  
-- 🔍 Task filtering, searching, and pagination  
-- 👥 Role-based access or shared lists  
-- ⚙️ CI/CD workflows for auto-deployment on push 
