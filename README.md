@@ -23,6 +23,18 @@ Full-stack task manager using **Firebase Auth** for authentication, **Spring Boo
 
 ---
 
+## 🚀 Deployment
+
+- **Frontend:** Deployed on **Vercel** → [https://code-list-omega.vercel.app](https://code-list-omega.vercel.app)  
+- **Backend:** Hosted on **Render** → connected directly from GitHub for continuous deployment  
+- **Environment Variables:**  
+  - Firebase Config  
+  - MongoDB URI  
+  - Render Backend URL  
+  *(all set as environment secrets on respective platforms)*
+
+---
+
 ## 🧱 Backend — Main Dependencies (Maven)
 
 - `org.springframework.boot:spring-boot-starter-web`  
@@ -44,17 +56,7 @@ Full-stack task manager using **Firebase Auth** for authentication, **Spring Boo
 
 ---
 
-## 🚀 Deployment
 
-- **Frontend:** Deployed on **Vercel** → [https://code-list-omega.vercel.app](https://code-list-omega.vercel.app)  
-- **Backend:** Hosted on **Render** → connected directly from GitHub for continuous deployment  
-- **Environment Variables:**  
-  - Firebase Config  
-  - MongoDB URI  
-  - Render Backend URL  
-  *(all set as environment secrets on respective platforms)*
-
----
 
 ## ✨ Key Features
 
@@ -81,22 +83,4 @@ Full-stack task manager using **Firebase Auth** for authentication, **Spring Boo
 - 🔔 Push notifications via Firebase Cloud Messaging  
 - 🔍 Task filtering, searching, and pagination  
 - 👥 Role-based access or shared lists  
-- ⚙️ CI/CD workflows for auto-deployment on push  
-
----
-
-## 👨‍💻 Author
-
-**Ajay Yyy**  
-🎓 Electrical & Electronics Engineering, Vignan Institute of Information Technology  
-💻 Passionate about full-stack development, microservices, and modern web design.
-
----
-
-## 🪪 License
-
-**MIT License**
-
----
-
-✨ *CodeList — organize your day, securely and smartly.*
+- ⚙️ CI/CD workflows for auto-deployment on push 
