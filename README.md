@@ -23,7 +23,7 @@ Each user can manage their own tasks — add, update, or delete them — all whi
 - **Authentication:** Firebase Authentication (JWT validation)  
 - **Build Tool:** Maven  
 - **Testing:** Postman  
-- **Deployment (Optional):** Render / Railway  
+- **Deployment :** Render  
 
 ---
 
